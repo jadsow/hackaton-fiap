@@ -4,7 +4,6 @@ import { RouterView } from "vue-router";
 
 <template>
   <main>
-    <!-- O Vue Router vai renderizar a página correta aqui -->
     <RouterView />
   </main>
 </template>

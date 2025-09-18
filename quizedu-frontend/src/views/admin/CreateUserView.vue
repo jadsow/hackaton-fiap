@@ -6,11 +6,10 @@ import router from "@/router";
 const name = ref("");
 const email = ref("");
 const password = ref("");
-const role = ref("STUDENT"); // Valor padrão
+const role = ref("STUDENT");
 
 const handleCreateUser = async () => {
   try {
-    // ATENÇÃO: Verifique se os nomes dos campos batem com o que seu backend espera
     const newUser = {
       name: name.value,
       email: email.value,
@@ -18,10 +17,10 @@ const handleCreateUser = async () => {
       role: role.value,
     };
 
-    await api.post("/users", newUser); // Assumindo que a rota de usuários está em /users
+    await api.post("/users", newUser);
 
     alert("Usuário criado com sucesso!");
-    router.push("/admin/dashboard"); // Volta para o dashboard
+    router.push("/admin/dashboard");
   } catch (error) {
     console.error("Erro ao criar usuário:", error);
     alert("Ocorreu um erro ao criar o usuário.");
