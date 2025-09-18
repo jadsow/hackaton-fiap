@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  db:
+    container_name: quiz_edu_db
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: quizedu
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    container_name: quiz_edu_backend
+    build:
+      context: ./quizedu-backend # <-- CORRIGIDO: Nome da pasta
+      dockerfile: Dockerfile.dev # <-- CORRIGIDO: Usa o Dockerfile de desenvolvimento
+    command: npm run dev
+    volumes:
+      - ./quizedu-backend:/app # <-- CORRIGIDO: Nome da pasta
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    env_file: ./quizedu-backend/.env # <-- CORRIGIDO: Nome da pasta
+    depends_on:
+      - db
+
+  frontend:
+    container_name: quiz_edu_frontend
+    build:
+      context: ./quizedu-frontend # <-- CORRIGIDO: Nome da pasta
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./quizedu-frontend:/app # <-- CORRIGIDO: Nome da pasta
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:

@@ -1,0 +1,19 @@
+# Use a imagem base do Node
+FROM node:20-alpine
+
+# Defina o diretório de trabalho
+WORKDIR /app
+
+# Copie os arquivos de dependência e instale-as
+# Fazemos isso separado para aproveitar o cache do Docker
+COPY package*.json ./
+RUN npm install
+
+# Copie o resto do código
+COPY . .
+
+# Expõe a porta padrão do Vite
+EXPOSE 5173
+
+# O '--host' é crucial para que o servidor Vite seja acessível de fora do container
+CMD ["npm", "run", "dev", "--", "--host"]
