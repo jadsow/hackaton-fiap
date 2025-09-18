@@ -16,25 +16,25 @@ services:
   backend:
     container_name: quiz_edu_backend
     build:
-      context: ./quizedu-backend # <-- CORRIGIDO: Nome da pasta
-      dockerfile: Dockerfile.dev # <-- CORRIGIDO: Usa o Dockerfile de desenvolvimento
+      context: ./quizedu-backend
+      dockerfile: Dockerfile.dev
     command: npm run dev
     volumes:
-      - ./quizedu-backend:/app # <-- CORRIGIDO: Nome da pasta
+      - ./quizedu-backend:/app
       - /app/node_modules
     ports:
       - "3000:3000"
-    env_file: ./quizedu-backend/.env # <-- CORRIGIDO: Nome da pasta
+    env_file: ./quizedu-backend/.env
     depends_on:
       - db
 
   frontend:
     container_name: quiz_edu_frontend
     build:
-      context: ./quizedu-frontend # <-- CORRIGIDO: Nome da pasta
+      context: ./quizedu-frontend
       dockerfile: Dockerfile.dev
     volumes:
-      - ./quizedu-frontend:/app # <-- CORRIGIDO: Nome da pasta
+      - ./quizedu-frontend:/app
       - /app/node_modules
     ports:
       - "5173:5173"
