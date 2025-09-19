@@ -1,20 +1,3 @@
-<script setup lang="ts">
-import { ref } from "vue";
-import { useAuthStore } from "@/stores/auth";
-
-const authStore = useAuthStore();
-const email = ref("");
-const password = ref("");
-
-const handleLogin = async () => {
-  if (!email.value || !password.value) {
-    alert("Por favor, preencha email e senha.");
-    return;
-  }
-  await authStore.login({ email: email.value, password: password.value });
-};
-</script>
-
 <template>
   <div class="login-container">
     <h1>Login</h1>
@@ -31,6 +14,23 @@ const handleLogin = async () => {
     </form>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore();
+const email = ref("");
+const password = ref("");
+
+const handleLogin = async () => {
+  if (!email.value || !password.value) {
+    alert("Por favor, preencha email e senha.");
+    return;
+  }
+  await authStore.login({ email: email.value, password: password.value });
+};
+</script>
 
 <style scoped>
 .login-container {

@@ -23,20 +23,20 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     async login(credentials: { email: string; password: any }) {
       try {
-        const response = await api.post("/login", credentials);
+        const response = await api.post("/auth/login", credentials);
 
-        const { token, user } = response.data;
+        const { access_token, user } = response.data;
 
-        if (!token || !user) {
+        if (!access_token || !user) {
           throw new Error(
             "Token ou dados do usuário não encontrados na resposta da API"
           );
         }
 
-        this.token = token;
+        this.token = access_token;
         this.user = user;
 
-        localStorage.setItem("authToken", token);
+        localStorage.setItem("authToken", access_token);
         localStorage.setItem("authUser", JSON.stringify(user));
 
         router.push("/admin/dashboard");
