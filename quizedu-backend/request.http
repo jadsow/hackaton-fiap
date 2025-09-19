@@ -1,0 +1,12 @@
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@admin.com",
+  "password": "admin123"
+}
+
+# GET http://localhost:3000/quizzes
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJURUFDSEVSIiwiaWF0IjoxNzU4MjExNTE2LCJleHAiOjE3NTgyOTc5MTZ9.uBXkHwTj65NEeWcnChgeq1jaG_ZVBNFZRXcTXTzJNa0
+# Content-Type: application/json
+
