@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import LoginView from "../views/LoginView.vue";
 import AdminDashboardView from "../views/admin/AdminDashboardView.vue";
 import CreateUserView from "../views/admin/CreateUserView.vue";
+import QuizzesList from "@/views/quiz/QuizzesList.vue";
+import QuizPlay from "@/views/quiz/QuizPlay.vue";
 import { useAuthStore } from "@/stores/auth";
 
 const router = createRouter({
@@ -27,6 +29,19 @@ const router = createRouter({
       name: "create-user",
       component: CreateUserView,
       meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: "/quizzes",
+      name: "quizzes",
+      component: QuizzesList,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/quizzes/:id",
+      name: "quiz-play",
+      component: QuizPlay,
+      meta: { requiresAuth: true },
+      props: true,
     },
   ],
 });
