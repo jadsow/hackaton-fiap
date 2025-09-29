@@ -5,7 +5,12 @@
         <h1>{{ quiz.title }}</h1>
         <p class="subtitle">{{ quiz.description || "—" }}</p>
       </div>
-      <button class="ghost" @click="goBack">← Voltar</button>
+      <div class="actions-buttons">
+        <button class="ghost" @click="goBack">← Voltar</button>
+        <button v-if="hasProgress" class="ghost" @click="restart">
+          ↺ Recomeçar
+        </button>
+      </div>
     </header>
 
     <div v-if="quiz.questions?.length">
@@ -13,11 +18,12 @@
 
       <div class="question-card">
         <h2 class="question">{{ current.text }}</h2>
-        <div class="options">
+
+        <div v-if="current.type === 'MULTIPLE_CHOICE'" class="options">
           <label v-for="opt in current.options" :key="opt.id" class="option">
             <input
               type="radio"
-              name="answer"
+              :name="`q-${current.id}`"
               :value="opt.id"
               v-model="answers[current.id]"
             />
@@ -25,10 +31,36 @@
           </label>
         </div>
 
+        <div v-else class="open-answer">
+          <label class="open-label" :for="`open-${current.id}`"
+            >Sua resposta</label
+          >
+          <textarea
+            :id="`open-${current.id}`"
+            rows="4"
+            v-model="answers[current.id]"
+            placeholder="Digite sua resposta aqui…"
+          />
+        </div>
+
         <div class="actions">
           <button @click="prev" :disabled="step === 0">Anterior</button>
-          <button v-if="!isLast" class="primary" @click="next">Próxima</button>
-          <button v-else class="primary" @click="finish">Finalizar</button>
+          <button
+            v-if="!isLast"
+            class="primary"
+            @click="next"
+            :disabled="!currentAnswered"
+          >
+            Próxima
+          </button>
+          <button
+            v-else
+            class="primary"
+            @click="finish"
+            :disabled="!currentAnswered"
+          >
+            Finalizar
+          </button>
         </div>
       </div>
     </div>
@@ -54,27 +86,47 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useQuizPersistence } from "@/composables/useQuizPersistence";
 import { useQuizStore } from "@/stores/quiz";
 import type { QuizQuestion } from "@/types/quiz";
+import { computed, onMounted, ref, watch } from "vue";
+import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
+
+type AnswerValue = number | string | null;
 
 const route = useRoute();
 const router = useRouter();
 const quizStore = useQuizStore();
 
 const id = Number(route.params.id);
+
 const step = ref(0);
-const answers = reactive<Record<number, number | null>>({});
+const answers = ref<Record<number, AnswerValue>>({});
 const showResult = ref(false);
 const score = ref(0);
+
+const { load, save, clear, hasLoaded } = useQuizPersistence(id, {
+  answers,
+  step,
+  showResult,
+  score,
+});
 
 const quiz = computed(() => quizStore.current ?? quizStore.byId(id));
 const questions = computed<QuizQuestion[]>(() => quiz.value?.questions ?? []);
 const total = computed(() => questions.value.length);
 const current = computed<QuizQuestion>(() => questions.value[step.value]);
-
 const isLast = computed(() => step.value === total.value - 1);
+
+const currentAnswered = computed(() => {
+  const q = current.value;
+  if (!q) return false;
+  const v = answers.value[q.id];
+  if (q.type === "OPEN") {
+    return typeof v === "string" && v.trim().length > 0;
+  }
+  return v !== null && v !== undefined;
+});
 
 function goBack() {
   router.push({ name: "quizzes" });
@@ -87,36 +139,71 @@ function prev() {
   if (step.value > 0) step.value--;
 }
 
+function isOpenAnswered(qId: number) {
+  const v = answers.value[qId];
+  return typeof v === "string" && v.trim().length > 0;
+}
+
 function finish() {
   let s = 0;
   for (const q of questions.value) {
-    const selectedOptId = answers[q.id];
-    const opt = q.options.find((o) => o.id === selectedOptId);
-    if (opt?.isCorrect) s++;
+    if (q.type === "MULTIPLE_CHOICE") {
+      const selectedOptId = answers.value[q.id] as number | null;
+      const opt = q.options.find((o) => o.id === selectedOptId);
+      if (opt?.isCorrect) s++;
+    } else if (q.type === "OPEN") {
+      if (isOpenAnswered(q.id)) s++;
+    }
   }
   score.value = s;
   showResult.value = true;
+  save();
 }
 
 function restart() {
   step.value = 0;
   showResult.value = false;
   score.value = 0;
-  for (const q of questions.value) answers[q.id] = null;
+  for (const q of questions.value) answers.value[q.id] = null;
+  save();
 }
+
+const hasProgress = computed(() => {
+  return (
+    Object.values(answers.value).some((v) =>
+      typeof v === "string"
+        ? v.trim().length > 0
+        : v !== null && v !== undefined
+    ) ||
+    step.value > 0 ||
+    showResult.value
+  );
+});
 
 onMounted(async () => {
   try {
     await quizStore.fetchById(id);
   } finally {
     for (const q of questions.value) {
-      if (!(q.id in answers)) answers[q.id] = null;
+      if (!(q.id in answers.value)) answers.value[q.id] = null;
+    }
+    load();
+    for (const key of Object.keys(answers.value)) {
+      const qid = Number(key);
+      if (!questions.value.some((q) => q.id === qid)) {
+        delete answers.value[qid];
+      }
     }
   }
 });
 
 watch(questions, (qs) => {
-  for (const q of qs) if (!(q.id in answers)) answers[q.id] = null;
+  for (const q of qs) if (!(q.id in answers.value)) answers.value[q.id] = null;
+  if (hasLoaded.value) save();
+});
+
+onBeforeRouteLeave(() => {
+  save();
 });
 </script>
 
@@ -137,11 +224,18 @@ watch(questions, (qs) => {
   margin-top: 4px;
 }
 .ghost {
+  height: 42px;
   padding: 10px 14px;
   border: 1px solid #ccc;
   background: transparent;
   border-radius: 6px;
   cursor: pointer;
+}
+.actions-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
 }
 .info {
   margin: 16px 0;
@@ -163,6 +257,7 @@ watch(questions, (qs) => {
 .question {
   margin-bottom: 12px;
 }
+
 .options {
   display: grid;
   gap: 8px;
@@ -176,6 +271,26 @@ watch(questions, (qs) => {
   border-radius: 6px;
   border: 1px solid #e5e7eb;
 }
+
+.open-answer {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.open-answer textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  resize: vertical;
+  min-height: 96px;
+  box-sizing: border-box;
+}
+.open-label {
+  font-size: 14px;
+  color: #444;
+}
+
 .actions {
   display: flex;
   gap: 8px;

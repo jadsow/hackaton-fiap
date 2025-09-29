@@ -9,8 +9,11 @@ const authStore = useAuthStore();
   <div class="dashboard">
     <h1>Bem-vindo, {{ authStore.user?.name }}!</h1>
     <p>Este é o seu painel de Administrador.</p>
-    <nav>
+    <nav class="nav">
       <RouterLink to="/admin/users/create">Criar Novo Usuário</RouterLink>
+      <RouterLink to="/admin/quizzes/create" class="link-button">
+        Criar Novo Quiz
+      </RouterLink>
     </nav>
     <button @click="authStore.logout()">Sair</button>
   </div>
@@ -21,7 +24,10 @@ const authStore = useAuthStore();
   padding: 20px;
 }
 nav {
+  display: flex;
+  flex-direction: column;
   margin: 20px 0;
+  gap: 6px;
 }
 button {
   padding: 10px;

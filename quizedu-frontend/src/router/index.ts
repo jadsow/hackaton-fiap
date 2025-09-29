@@ -1,10 +1,11 @@
+import { useAuthStore } from "@/stores/auth";
+import CreateQuizView from "@/views/admin/CreateQuizView.vue";
+import QuizPlay from "@/views/quiz/QuizPlayView.vue";
+import QuizzesList from "@/views/quiz/QuizzesListView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import LoginView from "../views/LoginView.vue";
 import AdminDashboardView from "../views/admin/AdminDashboardView.vue";
 import CreateUserView from "../views/admin/CreateUserView.vue";
-import QuizzesList from "@/views/quiz/QuizzesList.vue";
-import QuizPlay from "@/views/quiz/QuizPlay.vue";
-import { useAuthStore } from "@/stores/auth";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +29,12 @@ const router = createRouter({
       path: "/admin/users/create",
       name: "create-user",
       component: CreateUserView,
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: "/admin/quizzes/create",
+      name: "quiz-create",
+      component: CreateQuizView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
