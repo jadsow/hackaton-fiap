@@ -18,6 +18,7 @@ export class UserController {
   ) {}
 
   async create(req: Request, res: Response, next: NextFunction) {
+    console.log("REQ BODY:", req.body);
     try {
       if (!req.user) {
         return res.status(401).json({ message: "Usuário não autenticado" });

@@ -17,7 +17,7 @@ const handleCreateUser = async () => {
       role: role.value,
     };
 
-    await api.post("/users", newUser);
+    await api.post("/user", newUser);
 
     alert("Usuário criado com sucesso!");
     router.push("/admin/dashboard");

@@ -21,7 +21,7 @@ export function makeUserRoutes(deps: UserDeps) {
     deps.getUserByIdUseCase
   );
 
-  router.post("/", authMiddleware(["ADMIN"]), (req, res, next) =>
+  router.post("/", authMiddleware(["ADMIN", "TEACHER"]), (req, res, next) =>
     controller.create(req, res, next)
   );
 

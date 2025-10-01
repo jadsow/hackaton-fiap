@@ -23,7 +23,7 @@ const router = createRouter({
       path: "/admin/dashboard",
       name: "admin-dashboard",
       component: AdminDashboardView,
-      meta: { requiresAuth: true, requiresAdmin: true },
+      meta: { requiresAuth: true },
     },
     {
       path: "/admin/users/create",
@@ -35,7 +35,7 @@ const router = createRouter({
       path: "/admin/quizzes/create",
       name: "quiz-create",
       component: CreateQuizView,
-      meta: { requiresAuth: true, requiresAdmin: true },
+      meta: { requiresAuth: true },
     },
     {
       path: "/quizzes",

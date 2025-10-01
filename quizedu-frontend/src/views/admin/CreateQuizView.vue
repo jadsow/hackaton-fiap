@@ -114,6 +114,8 @@ async function handleCreateQuiz() {
       })),
     };
 
+    console.log("Payload to send:", payload);
+
     await api.post("/quizzes", payload);
 
     alert("Quiz criado com sucesso!");

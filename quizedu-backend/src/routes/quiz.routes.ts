@@ -15,11 +15,7 @@ export function makeQuizRoutes(deps: { createQuizUseCase: any }) {
     (req, res) => controller.getById(req, res)
   );
 
-  router.get(
-    "/quizzes",
-    authMiddleware(["TEACHER", "STUDENT", "ADMIN"]),
-    (req, res) => controller.listAll(req, res)
-  );
+  router.get("/quizzes", (req, res) => controller.listAll(req, res));
 
   return router;
 }
