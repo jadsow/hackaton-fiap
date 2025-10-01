@@ -38,13 +38,13 @@ npm run dev
 
 # Frontend
 
-cd quizedu-frontend
+`cd quizedu-frontend
 npm install
-npm run serve
+npm run serve`
 
 # Com Docker
 
-docker-compose up --build
+`docker-compose up --build`
 
 # Funcionamento da Plataforma
 
