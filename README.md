@@ -38,9 +38,9 @@ npm run dev
 
 # Frontend
 
-`cd quizedu-frontend
-npm install
-npm run serve`
+`cd quizedu-frontend`
+`npm install`
+`npm run serve`
 
 # Com Docker
 
